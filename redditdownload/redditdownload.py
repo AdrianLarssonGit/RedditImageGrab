@@ -489,7 +489,7 @@ def main(args=None):
 
             # measure time and set the program to wait 4 second between request
             # as per reddit api guidelines
-            end_time = time.clock()
+            end_time = time.process_time()
 
             if start_time is not None:
                 elapsed_time = end_time - start_time
@@ -497,7 +497,7 @@ def main(args=None):
                 if elapsed_time <= 4:  # throttling
                     time.sleep(4 - elapsed_time)
 
-            start_time = time.clock()
+            start_time = time.process_time()
 
             # No more items to process
             if not ITEMS:
