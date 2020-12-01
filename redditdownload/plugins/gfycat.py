@@ -126,7 +126,7 @@ class _gfycatUtils(object):
             req = urllib.request.Request(self.get("mp4Url"), None, headers)
             file = urllib.request.urlopen(req)
             # make sure that the status code is 200, and the content type is mp4
-            if int(file.code) is not 200 or file.headers["content-type"] != "video/mp4":
+            if int(file.code) != 200 or file.headers["content-type"] != "video/mp4":
                 raise ValueError("Problem downlading the file. Status code is %s or the content-type is not right %s"
                     % (file.code, file.headers["content-type"]))
             data = file.read()

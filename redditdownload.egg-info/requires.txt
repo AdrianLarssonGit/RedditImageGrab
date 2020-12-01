@@ -1,0 +1,12 @@
+
+[recommended]
+Pillow
+atomicfile
+bs4
+html5lib
+ipython
+lxml
+pyaux
+python-magic
+requests
+yaml

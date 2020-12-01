@@ -1,0 +1,3 @@
+[console_scripts]
+redditdl.py = redditdownload.redditdownload:main
+
