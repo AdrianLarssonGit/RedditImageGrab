@@ -473,16 +473,13 @@ def main(args=None):
             last_id = ''
 
         TOTAL[0], DOWNLOADED[0], ERRORS[0], SKIPPED[0], FAILED[0], FILECOUNT = 0, 0, 0, 0, 0, 0
-
         # ITEMS loop - begin the loop to get reddit submissions & download media from them
         while not FINISHED:
             if ARGS.verbose:
                 print()
-
             ITEMS = getitems(
                 ARGS.subreddit, multireddit=ARGS.multireddit, previd=last_id,
                 reddit_sort=sort_type)
-
             # debug ITEMS variable value
             # if ARGS.verbose:
             #    history_log(os.getcwd(), 'ITEMS.txt', 'write', ITEMS)
@@ -509,7 +506,6 @@ def main(args=None):
             for ITEM in ITEMS:
                 TOTAL[0] += 1
 
-                # not downloading if url is reddit comment
                 if ('reddit.com/r/' + ARGS.subreddit + '/comments/' in ITEM['url'] or
                         re.match(reddit_comment_regex, ITEM['url']) is not None):
                     # hotfix for when last item is comment submission which caused infinite looping

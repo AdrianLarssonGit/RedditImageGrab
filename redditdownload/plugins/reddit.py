@@ -3,7 +3,7 @@
 
 import sys
 from urllib.request import urlopen, Request
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from json import JSONDecoder
 
 
@@ -28,6 +28,8 @@ def getitems(subreddit, multireddit=False, previd='', reddit_sort=None):
     >>> for item in olditems:
     ...     print '\t%s - %s' % (item['title'], item['url']) # doctest: +SKIP
     """
+
+
 
     if multireddit:
         if '/m/' not in subreddit:
