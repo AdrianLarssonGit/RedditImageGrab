@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 """Download images from a reddit.com subreddit."""
 
-
 import os
 import re
 import io
@@ -30,7 +29,6 @@ from .plugins.imgur_downloader.imgurdownloader import ImgurDownloader, ImgurExce
 from .plugins.parse_subreddit_list import parse_subreddit_list
 from .deviantart import process_deviant_url
 
-
 _log = logging.getLogger('redditdownload')
 
 
@@ -44,7 +42,7 @@ def request(url, *ar, **kwa):
         except Exception as exc:
             if _try == _retries - 1:
                 raise
-            print ("Try %r err %r  (%r)" % (
+            print("Try %r err %r  (%r)" % (
                 _try, exc, url))
         else:
             break
@@ -91,7 +89,7 @@ def extract_imgur_album_urls(album_url):
         memfile = None
 
     if memfile == None:
-    	return []
+        return []
 
     for line in memfile.readlines():
         results = re.findall(match, line)
@@ -155,7 +153,10 @@ def download_from_url(url, dest_file):
 
     # Only try to download acceptable image types
     if filetype not in ['image/jpeg', 'image/png', 'image/gif', 'video/webm', 'video/mp4']:
-        raise WrongFileTypeException('WRONG FILE TYPE: %s has type: %s!' % (url, filetype))
+        if str(url).__contains__("reddituploads.com"):
+            print("We do not support reddituploads.com. Skipping...")
+        else:
+            raise WrongFileTypeException('WRONG FILE TYPE: %s has type: %s!' % (url, filetype))
 
     filedata = response.read()
     filehandle = open(dest_file, 'wb')
@@ -300,21 +301,21 @@ def process_subreddit_last_id(subreddit, sort_type, dir, log_file, verbose=False
         # second: we check if the data loaded is a dictionary
         if not isinstance(log_data, dict):
             raise WrongDataException(log_data,
-                'data from %s is not a dictionary, overwriting %s'
-                % (log_file, log_file))
+                                     'data from %s is not a dictionary, overwriting %s'
+                                     % (log_file, log_file))
 
         # third: try loading last id for subreddit & sort_type
         if subreddit in log_data:
             if sort_type in log_data[subreddit]:
                 last_id = log_data[subreddit][sort_type]['last-id']
-            else: # sort_type not in log_data but subreddit is
+            else:  # sort_type not in log_data but subreddit is
                 no_history = True
                 log_data[subreddit][sort_type] = {'last-id': ''}
-        else: # subreddit not listed as key in log_data
+        else:  # subreddit not listed as key in log_data
             no_history = True
             log_data[subreddit] = {sort_type: {'last-id': ''}}
 
-    except (FileNotFoundError, IOError): # py3 or py2 exception for dne file
+    except (FileNotFoundError, IOError):  # py3 or py2 exception for dne file
         last_id = ''
         log_data = {
             subreddit: {
@@ -325,8 +326,8 @@ def process_subreddit_last_id(subreddit, sort_type, dir, log_file, verbose=False
         }
         history_log(dir, log_file, 'write', log_data)
         if verbose:
-            print ('%s not found in %s, created new %s'
-                % (log_file, dir, log_file))
+            print('%s not found in %s, created new %s'
+                  % (log_file, dir, log_file))
 
     except WrongDataException as e:
         if verbose:
@@ -344,7 +345,7 @@ def process_subreddit_last_id(subreddit, sort_type, dir, log_file, verbose=False
 
 def parse_args(args):
     PARSER = ArgumentParser(description='Downloads files with specified extension'
-                            'from the specified subreddit.')
+                                        'from the specified subreddit.')
     PARSER.add_argument('subreddit', metavar='<subreddit>',
                         help='Subreddit or subreddit list file name.')
     PARSER.add_argument('dir', metavar='<dest_file>', nargs='?',
@@ -352,7 +353,7 @@ def parse_args(args):
     PARSER.add_argument('--multireddit', default=False, action='store_true',
                         required=False,
                         help='Take multirredit instead of subreddit as input.'
-                        'If so, provide /user/m/multireddit-name as argument')
+                             'If so, provide /user/m/multireddit-name as argument')
     PARSER.add_argument('--subreddit-list', metavar='srl-filename', default=False,
                         type=str, required=False, nargs=1,
                         help='name of text file containing list of subreddits')
@@ -396,7 +397,6 @@ def parse_args(args):
     if parsed_argument.update:
         parsed_argument.restart = True
 
-
     return parsed_argument
 
 
@@ -412,12 +412,12 @@ def parse_reddit_argument(reddit_args):
 
 
 def main(args=None):
-    ARGS = parse_args(args if len(args)>0 else sys.argv[1:])
+    ARGS = parse_args(args if len(args) > 0 else sys.argv[1:])
 
     logging.basicConfig(level=logging.INFO)
 
     # value at first index is of current subreddit, second index is total
-    TOTAL, DOWNLOADED, ERRORS, SKIPPED, FAILED =  [0,0], [0,0], [0,0], [0,0], [0,0]
+    TOTAL, DOWNLOADED, ERRORS, SKIPPED, FAILED = [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]
     PROG_REPORT = [TOTAL, DOWNLOADED, ERRORS, SKIPPED, FAILED]
 
     # Create the specified directory if it doesn't already exist.
@@ -463,11 +463,11 @@ def main(args=None):
         FINISHED = False
 
         if ARGS.verbose:
-            print ('index: %s, %s, %s' % (index, ARGS.subreddit, ARGS.dir))
+            print('index: %s, %s, %s' % (index, ARGS.subreddit, ARGS.dir))
 
         # load last_id or create new entry for last_id in log_data
         log_data, last_id = process_subreddit_last_id(ARGS.subreddit, ARGS.sort_type,
-                                                ARGS.dir, log_file, ARGS.dir)
+                                                      ARGS.dir, log_file, ARGS.dir)
 
         if ARGS.restart:
             last_id = ''
@@ -500,7 +500,7 @@ def main(args=None):
             if not ITEMS:
                 if ARGS.verbose:
                     print('No more ITEMS for %s %s' %
-                            (ARGS.subreddit, ARGS.sort_type))
+                          (ARGS.subreddit, ARGS.sort_type))
                 break
 
             for ITEM in ITEMS:
@@ -594,7 +594,7 @@ def main(args=None):
                             FILENAME = '%s%s%s' % (slugify(ITEM['title']), FILENUM, FILEEXT)
 
                             if len(FILENAME) >= 256:
-                                shortened_item_title = slugify(ITEM['title'])[:256-len(FILENAME)]
+                                shortened_item_title = slugify(ITEM['title'])[:256 - len(FILENAME)]
                                 FILENAME = '%s%s%s' % (shortened_item_title, FILENUM, FILEEXT)
                         else:
                             FILENAME = '%s%s%s' % (ITEM['id'], FILENUM, FILEEXT)
@@ -612,12 +612,12 @@ def main(args=None):
                             dl = skp = 0
                             if 'imgur.com' in URL:
                                 fname = os.path.splitext(FILENAME)[0]
-                                save_path=os.path.join(os.getcwd(), ARGS.dir)
-                                downloader=ImgurDownloader(URL,
-                                                            save_path,
-                                                            fname,
-                                                            delete_dne=True,
-                                                            debug=False)
+                                save_path = os.path.join(os.getcwd(), ARGS.dir)
+                                downloader = ImgurDownloader(URL,
+                                                             save_path,
+                                                             fname,
+                                                             delete_dne=True,
+                                                             debug=False)
                                 (dl, skp) = downloader.save_images()
                             else:
                                 download_from_url(URL, FILEPATH)
@@ -628,7 +628,9 @@ def main(args=None):
                             DOWNLOADED[0] += 1
                             SKIPPED[0] += skp
                             FILECOUNT += 1
-
+                        except URLError:
+                            print('We do not support reddituploads links yet'
+                                  ' skipping....')
                         except FileExistsException as ERROR:
                             ERRORS[0] += 1
                             if ARGS.verbose:
@@ -640,7 +642,7 @@ def main(args=None):
                         except ImgurException as e:
                             ERRORS[0] += 1
                         except Exception as e:
-                            print (e)
+                            print(e)
                             ERRORS[0] += 1
 
                         if ARGS.num and (DOWNLOADED[0]) >= ARGS.num:

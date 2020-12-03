@@ -1,5 +1,7 @@
 ## todo
 
+* fix reddituploads downloads
+
 * fix downloading from deviantart, tubmlr, pixiv.net, instagram & other sites
 
 * validate subreddit is legit subreddit
